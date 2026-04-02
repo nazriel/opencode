@@ -202,6 +202,9 @@ export namespace LLM {
 
     const tools = await resolveTools(input)
 
+    // Allow plugins to transform the complete tool set (reorder, add providerOptions, etc.)
+    await Plugin.trigger("experimental.chat.tools.transform", { model: input.model }, { tools })
+
     // LiteLLM and some Anthropic proxies require the tools parameter to be present
     // when message history contains tool calls, even if no tools are being used.
     // Add a dummy tool that is never called to satisfy this validation.
@@ -378,6 +381,13 @@ export namespace LLM {
               if (args.type === "stream") {
                 // @ts-expect-error
                 args.params.prompt = ProviderTransform.message(args.params.prompt, input.model, options)
+                // Allow plugins to transform messages after all built-in transforms
+                const { messages: transformed } = await Plugin.trigger(
+                  "experimental.chat.model-messages.transform",
+                  { model: input.model },
+                  { messages: args.params.prompt },
+                )
+                args.params.prompt = transformed
               }
               return args.params
             },

@@ -279,4 +279,19 @@ export interface Hooks {
    * Modify tool definitions (description and parameters) sent to LLM
    */
   "tool.definition"?: (input: { toolID: string }, output: { description: string; parameters: any }) => Promise<void>
+  /**
+   * Transform the complete set of tools before they are sent to the LLM.
+   * Runs after tool assembly and permission filtering.
+   * Useful for reordering tools or setting providerOptions on tool definitions.
+   */
+  "experimental.chat.tools.transform"?: (
+    input: { model: Model },
+    output: { tools: Record<string, any> },
+  ) => Promise<void>
+  /**
+   * Transform model messages just before they are sent to the LLM provider.
+   * Runs after all built-in transforms (normalization, caching).
+   * Useful for setting providerOptions on messages for cache control, etc.
+   */
+  "experimental.chat.model-messages.transform"?: (input: { model: Model }, output: { messages: any[] }) => Promise<void>
 }
