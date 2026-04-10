@@ -268,6 +268,7 @@ Command behavior:
   - `ready`
   - `config`
   - `provider`
+  - `model.current()`
   - `path.{state,config,worktree,directory}`
   - `vcs?.branch`
   - `session.count()`
@@ -280,9 +281,20 @@ Command behavior:
   - `part(messageID)`
   - `lsp()`
   - `mcp()`
+  - `model.current()` returns `{ providerID, modelID } | undefined`
 - `api.client` always reflects the current runtime client.
 - `api.event.on(type, handler)` subscribes to the TUI event stream and returns an unsubscribe function.
 - `api.renderer` exposes the raw `CliRenderer`.
+
+Example:
+
+```tsx
+const isOpenai = api.state.model.current()?.providerID === "openai"
+
+if (isOpenai) {
+  // render OpenAI-only UI
+}
+```
 
 ### Theme
 

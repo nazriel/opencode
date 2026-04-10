@@ -5,6 +5,7 @@ import type { useEvent } from "@tui/context/event"
 import type { useKeybind } from "@tui/context/keybind"
 import type { useRoute } from "@tui/context/route"
 import type { useSDK } from "@tui/context/sdk"
+import type { useLocal } from "@tui/context/local"
 import type { useSync } from "@tui/context/sync"
 import type { useTheme } from "@tui/context/theme"
 import { Dialog as DialogUI, type useDialog } from "@tui/ui/dialog"
@@ -40,6 +41,7 @@ type Input = {
   event: ReturnType<typeof useEvent>
   sdk: ReturnType<typeof useSDK>
   sync: ReturnType<typeof useSync>
+  local: ReturnType<typeof useLocal>
   theme: ReturnType<typeof useTheme>
   toast: ReturnType<typeof useToast>
   renderer: TuiPluginApi["renderer"]
@@ -126,7 +128,7 @@ function mapOptionCb<Value>(cb?: (item: TuiDialogSelectOption<Value>) => void) {
   return (item: SelectOption<Value>) => cb(pickOption(item))
 }
 
-function stateApi(sync: ReturnType<typeof useSync>): TuiPluginApi["state"] {
+function stateApi(sync: ReturnType<typeof useSync>, local: ReturnType<typeof useLocal>): TuiPluginApi["state"] {
   return {
     get ready() {
       return sync.ready
@@ -136,6 +138,11 @@ function stateApi(sync: ReturnType<typeof useSync>): TuiPluginApi["state"] {
     },
     get provider() {
       return sync.data.provider
+    },
+    model: {
+      current() {
+        return local.model.current()
+      },
     },
     get path() {
       return sync.path
@@ -332,7 +339,7 @@ export function createTuiApi(input: Input): TuiPluginApi {
         return input.kv.ready
       },
     },
-    state: stateApi(input.sync),
+    state: stateApi(input.sync, input.local),
     get client() {
       return input.sdk.client
     },

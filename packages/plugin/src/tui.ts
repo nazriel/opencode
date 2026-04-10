@@ -265,6 +265,9 @@ export type TuiState = {
   readonly ready: boolean
   readonly config: SdkConfig
   readonly provider: ReadonlyArray<Provider>
+  readonly model: {
+    current: () => { providerID: string; modelID: string } | undefined
+  }
   readonly path: {
     state: string
     config: string

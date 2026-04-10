@@ -91,6 +91,7 @@ type Opts = {
     ready?: HostPluginApi["state"]["ready"]
     config?: HostPluginApi["state"]["config"]
     provider?: HostPluginApi["state"]["provider"]
+    model?: Partial<HostPluginApi["state"]["model"]>
     path?: HostPluginApi["state"]["path"]
     vcs?: HostPluginApi["state"]["vcs"]
     session?: Partial<HostPluginApi["state"]["session"]>
@@ -274,6 +275,9 @@ export function createTuiPluginApi(opts: Opts = {}): HostPluginApi {
       },
       get provider() {
         return opts.state?.provider ?? []
+      },
+      model: {
+        current: opts.state?.model?.current ?? (() => undefined),
       },
       get path() {
         return opts.state?.path ?? { home: "", state: "", config: "", worktree: "", directory: "" }
